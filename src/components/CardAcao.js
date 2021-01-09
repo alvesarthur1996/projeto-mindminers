@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Button, Card, Row, Col, Tabs, Tab} from "react-materialize";
 import ModalCV from "./ModalCV";
+import {dbKey} from "../models/database";
 
 class CardAcao extends Component {
 
@@ -14,12 +15,69 @@ class CardAcao extends Component {
 
         this._PM = 0;
         this._QM = 0;
-        this._PC = this.props.PC;
-        this._QC = this.props.QC;
-        this._TC = this.props.TC;
+        this._RA = 0;
+        this._PA = 0;
         this._dadosAcao = {};
     }
 
+    compraAcao(qtd, preco, taxa, idAcao) {
+        const newQM = this._QM + qtd;
+        const newPM = ((this._PM * this._QM) + (preco * qtd) + taxa) / newQM;
+
+        const indexAcao = this.props.database.carteira.map((item, index) => {
+            if (item.id_acao == idAcao)
+                return index;
+            else
+                return false;
+        }).filter(item => item !== false);
+
+        if (indexAcao.length) {
+            this.props.database.carteira[indexAcao].qtd_media = newQM;
+            this.props.database.carteira[indexAcao].preco_medio = newPM;
+        } else {
+            this.props.database.carteira.push({id_acao: idAcao, qtd_media: newQM, preco_medio: newPM});
+        }
+
+        this.props.database.historico.push({
+            id_acao: idAcao,
+            data: new Date().toLocaleString().split(' ')[0],
+            tipo: 'compra',
+            cod: this.props.database.acoes.filter(acao => acao.id_acao == idAcao)[0].cod,
+            preco: preco,
+            qtd: qtd,
+            taxa_corretagem: taxa
+        });
+
+        localStorage.setItem(dbKey, JSON.stringify(this.props.database));
+        window.location.reload();
+
+
+    }
+
+    vendaAcao(qtd, preco, taxa, idAcao) {
+        const RA = ((preco - this._PM) * qtd) - taxa;
+        this.props.database.carteira[this.props.idx].qtd_media = this._QM - qtd;
+        this.props.database.carteira[this.props.idx].resultado_auferido = RA;
+
+        if(RA < 0) {
+            this.props.database.carteira[this.props.idx].prejuizo_acumulado = this._PA - RA;
+        }else if(RA > 0) {
+
+        }
+
+
+        this.props.database.historico.push({
+            id_acao: idAcao,
+            data: new Date().toLocaleString().split(' ')[0],
+            tipo: 'venda',
+            cod: this.props.database.acoes.filter(acao => acao.id_acao == idAcao)[0].cod,
+            preco: preco,
+            qtd: qtd,
+            taxa_corretagem: taxa
+        });
+
+        localStorage.setItem(dbKey, JSON.stringify(this.props.database));
+    }
 
     _handleClickBuySell(btn) {
         const newState = {
@@ -28,42 +86,61 @@ class CardAcao extends Component {
         };
 
         this.setState(newState);
-        console.log(newState)
     }
 
-    closeModal(){
+    closeModal() {
         this.setState({
             openModal: false
         })
-        console.log(this.state)
     }
 
 
     render() {
         this._PM = this.props.precoMedio;
         this._QM = this.props.qtdMedia;
-        this._dadosAcao = this.props.dadosAcoes.filter(acao => acao.id_acao == this.props.idAcao)[0];
+        this._RA = 0;
+        this._PA = 0;
+        this._dadosAcao = this.props.database.acoes.filter(acao => acao.id_acao == this.props.idAcao)[0];
+
 
         return (
-            <Card className="col m4 s12 indigo darken-4" textClassName="white-text" title={this._dadosAcao.cod}>
-                <h6>Posição: R$ {this._PM}</h6>
-                <h6>Qtd: {this._QM}</h6>
+            <Card
+                className="col m4 s12 indigo darken-4"
+                textClassName="white-text"
+                title={this._dadosAcao.cod}
+            >
+
+                {this.props.somenteCompra ? null :
+                    <div>
+                        <h6>Posição: {(this._PM * this._QM).toLocaleString('pt-br', {
+                            style: 'currency',
+                            currency: 'BRL'
+                        })}</h6>
+                        <h6> Preço Médio: R$ {this._PM}</h6>
+                        <h6>Qtd: {this._QM}</h6>
+                    </div>
+                }
+                <br/>
 
                 <Button data-cv="compra" onClick={this._handleClickBuySell.bind(this)} className="green darken-5"
                         style={{marginRight: '10px', minWidth: '120px'}} waves="light">
                     Compra
                 </Button>
-
-                <Button data-cv="venda" onClick={this._handleClickBuySell.bind(this)} className="red darken-5"
-                        style={{marginRight: '10px', minWidth: '120px'}} waves="light">
-                    Venda
-                </Button>
+                {this.props.somenteCompra ? null :
+                    <Button data-cv="venda" onClick={this._handleClickBuySell.bind(this)} className="red darken-5"
+                            style={{marginRight: '10px', minWidth: '120px'}} waves="light">
+                        Venda
+                    </Button>
+                }
                 {this.state.openModal ?
                     <ModalCV
+                        compra={this.compraAcao.bind(this)}
+                        venda={this.vendaAcao.bind(this)}
                         openModal={this.state.openModal}
                         dadosAcao={this._dadosAcao}
                         CV={this.state.buyOrSell}
                         closeUpdate={this.closeModal.bind(this)}
+                        vendaMax={this.props.vendaMax}
                     />
                     : null
                 }

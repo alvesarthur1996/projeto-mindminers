@@ -6,7 +6,7 @@ import Home from "./views/Home";
 import Carteira from "./views/Carteira";
 import Acoes from "./views/Acoes";
 import Historico from "./views/Historico";
-import {dbInitData} from "./models/database"
+import {dbInitData, dbKey} from "./models/database"
 
 class App extends Component {
 
@@ -18,18 +18,17 @@ class App extends Component {
 
     componentWillMount() {
         this.setDatabase();
-        console.log(this.database);
     }
 
 
     setDatabase() {
-        const validate = localStorage.getItem('@projeto-mindminers/db') !== null;
+        const validate = localStorage.getItem(dbKey) !== null;
         if (!validate)
-            localStorage.setItem('@projeto-mindminers/db', JSON.stringify(dbInitData));
+            localStorage.setItem(dbKey, JSON.stringify(dbInitData));
 
-        this.database = JSON.parse(localStorage.getItem('@projeto-mindminers/db'));
+        this.database = JSON.parse(localStorage.getItem(dbKey));
 
-        return JSON.parse(localStorage.getItem('@projeto-mindminers/db'));
+        return JSON.parse(localStorage.getItem(dbKey));
     }
 
     render() {

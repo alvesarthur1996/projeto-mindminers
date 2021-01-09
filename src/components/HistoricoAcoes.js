@@ -11,6 +11,7 @@ class HistoricoAcoes extends Component {
                 <thead>
                     <tr>
                         <th data-field="date"> Data</th>
+                        <th data-field="code"> Cod.</th>
                         <th data-field="type"> Tipo</th>
                         <th data-field="price"> Preço</th>
                         <th data-field="qtd"> Quantidade</th>
@@ -24,10 +25,11 @@ class HistoricoAcoes extends Component {
                         return (
                             <tr key={index} className={el.tipo == 'compra' ? 'green lighten-4' : 'red lighten-4'}>
                                 <td>{el.data}</td>
+                                <td>{el.cod}</td>
                                 <td style={{textTransform:'capitalize'}}>{el.tipo}</td>
-                                <td>R$ {el.preco}</td>
+                                <td>{el.preco.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}</td>
                                 <td>{el.qtd}</td>
-                                <td>R$ {el.taxa_corretagem}</td>
+                                <td>{el.taxa_corretagem.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})}</td>
                             </tr>
                         )
                     })
