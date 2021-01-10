@@ -7,6 +7,7 @@ import Carteira from "./views/Carteira";
 import Acoes from "./views/Acoes";
 import Historico from "./views/Historico";
 import {dbInitData, dbKey} from "./models/database"
+import "./assets/styles/app.scss";
 
 class App extends Component {
 

@@ -1,0 +1,28 @@
+body {
+    background-color: #e5e6ea;
+}
+
+.collapsible-body {
+    background-color: #fff;
+}
+
+.brand-logo {
+    margin: 10px 5px;
+    @media screen and (max-width: 992px) {
+        margin: 10px 0;
+    }
+    @media screen and (max-width: 600px) {
+        margin: 5px 0;
+    }
+}
+
+.card.col.m4 {
+    @media screen and (min-width: 601px) {
+        width: calc(33.3333333333% - 5px);
+        margin: 2.5px 2.5px;
+    }
+
+    button{
+        margin: 2.5px 0;
+    }
+}

@@ -13,17 +13,9 @@ export const dbInitData = {
 export const dbKey = '@projeto-mindminers/db';
 
 
-export const dbAdd = (to, data) => {
+export const dbSave = (to, data) => {
     console.log('aqui');
     let db = JSON.parse(localStorage.getItem(dbKey));
     console.log(db);
     return true;
-}
-
-export function dbRemove() {
-
-}
-
-export function dbEdit() {
-
-}
+};

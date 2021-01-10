@@ -17,6 +17,7 @@ class CardAcao extends Component {
         this._QM = 0;
         this._RA = 0;
         this._PA = 0;
+        this._IR = 0;
         this._dadosAcao = {};
     }
 
@@ -34,8 +35,19 @@ class CardAcao extends Component {
         if (indexAcao.length) {
             this.props.database.carteira[indexAcao].qtd_media = newQM;
             this.props.database.carteira[indexAcao].preco_medio = newPM;
+            this.props.database.carteira[indexAcao].prejuizo_acumulado = this._PA;
+            this.props.database.carteira[indexAcao].resultado_auferido = this._RA;
+            this.props.database.carteira[indexAcao].imposto = this._IR;
+
         } else {
-            this.props.database.carteira.push({id_acao: idAcao, qtd_media: newQM, preco_medio: newPM});
+            this.props.database.carteira.push({
+                id_acao: idAcao,
+                qtd_media: newQM,
+                preco_medio: newPM,
+                prejuizo_acumulado: this._PA,
+                resultado_auferido: this._RA,
+                imposto: this._IR
+            });
         }
 
         this.props.database.historico.push({
@@ -45,26 +57,30 @@ class CardAcao extends Component {
             cod: this.props.database.acoes.filter(acao => acao.id_acao == idAcao)[0].cod,
             preco: preco,
             qtd: qtd,
-            taxa_corretagem: taxa
+            taxa_corretagem: taxa,
+            prejuizo_acumulado: this._PA,
+            resultado_auferido: this._RA,
+            imposto: this._IR
         });
 
         localStorage.setItem(dbKey, JSON.stringify(this.props.database));
         window.location.reload();
-
-
     }
 
     vendaAcao(qtd, preco, taxa, idAcao) {
-        const RA = ((preco - this._PM) * qtd) - taxa;
-        this.props.database.carteira[this.props.idx].qtd_media = this._QM - qtd;
-        this.props.database.carteira[this.props.idx].resultado_auferido = RA;
+        this._RA = ((preco - this._PM) * qtd) - taxa;
+        this._QM -= qtd;
+        this.props.database.carteira[this.props.idx].qtd_media = this._QM;
+        this.props.database.carteira[this.props.idx].resultado_auferido = this._RA;
 
-        if(RA < 0) {
-            this.props.database.carteira[this.props.idx].prejuizo_acumulado = this._PA - RA;
-        }else if(RA > 0) {
-
+        if (this._RA < 0) {
+            this._PA += this._RA  * -1;
+            this.props.database.carteira[this.props.idx].prejuizo_acumulado = this._PA;
+        } else if (this._RA >= 0) {
+            this._IR = (this._RA - Math.min(this._RA, this._PA)) * 0.15;
+            this._PA = this._PA - Math.min(this._RA, this._PA);
+            this.props.database.carteira[this.props.idx].prejuizo_acumulado = this._PA;
         }
-
 
         this.props.database.historico.push({
             id_acao: idAcao,
@@ -72,11 +88,16 @@ class CardAcao extends Component {
             tipo: 'venda',
             cod: this.props.database.acoes.filter(acao => acao.id_acao == idAcao)[0].cod,
             preco: preco,
+            preco_medio: this._PM,
             qtd: qtd,
-            taxa_corretagem: taxa
+            taxa_corretagem: taxa,
+            prejuizo_acumulado: this._PA,
+            resultado_auferido: this._RA,
+            imposto: this._IR
         });
 
         localStorage.setItem(dbKey, JSON.stringify(this.props.database));
+        window.location.reload();
     }
 
     _handleClickBuySell(btn) {
@@ -98,8 +119,9 @@ class CardAcao extends Component {
     render() {
         this._PM = this.props.precoMedio;
         this._QM = this.props.qtdMedia;
-        this._RA = 0;
-        this._PA = 0;
+        if (!this.props.somenteCompra) {
+            this._PA = this.props.database.carteira[this.props.idx].prejuizo_acumulado;
+        }
         this._dadosAcao = this.props.database.acoes.filter(acao => acao.id_acao == this.props.idAcao)[0];
 
 
@@ -116,7 +138,7 @@ class CardAcao extends Component {
                             style: 'currency',
                             currency: 'BRL'
                         })}</h6>
-                        <h6> Preço Médio: R$ {this._PM}</h6>
+                        <h6> Preço Médio: R$ {this._PM.toLocaleString('pt-br', {style: 'currency', currency: 'BRL'})}</h6>
                         <h6>Qtd: {this._QM}</h6>
                     </div>
                 }
