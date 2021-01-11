@@ -51,6 +51,9 @@ class Grafico extends Component {
 
         const {values, labels} = data;
 
+        if(labels.length <= 0)
+            return (<h6> Adicione ativos na sua carteira para visualizar esta informação.</h6>);
+
         if (this.props.carteira) {
             const cleanData = {
                 labels: labels,

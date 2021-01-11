@@ -43,7 +43,7 @@ class Acoes extends Component {
     novaAcao(nome, cod){
         let {acoes} = this.props.database;
 
-        if(acoes.filter(item => item.cod == cod).length) {
+        if(acoes.filter(item => item.cod.toLowerCase() == cod.toLowerCase()).length) {
             alert("Essa ação já está listada!");
             return false;
         }
@@ -51,7 +51,7 @@ class Acoes extends Component {
         acoes.push({
             id_acao: String((acoes.length + 1)),
             nome: nome,
-            cod: cod
+            cod: cod.toUpperCase()
         });
         
         this.props.database.acoes = acoes;
@@ -97,6 +97,10 @@ class Acoes extends Component {
                 {
                     this.state.openModal ?
                         <Modal
+                            actions={[
+                                <Button onClick={this._closeModal.bind(this)} flat modal="close" node="button"
+                                        waves="red">Cancelar</Button>
+                            ]}
                             open={this.state.openModal}
                             bottomSheet={false}
                             fixedFooter={false}
