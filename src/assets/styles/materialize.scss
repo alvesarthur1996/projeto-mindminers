@@ -1,0 +1,47 @@
+/* Collapsible */
+.collapsible-body {
+    background-color: #fff;
+}
+
+/* Logo */
+.brand-logo {
+    margin: 10px 5px;
+    @media screen and (max-width: 992px) {
+        margin: 10px 0;
+    }
+    @media screen and (max-width: 600px) {
+        margin: 5px 0;
+    }
+}
+
+/* Table */
+table.highlight {
+    > tbody {
+        > tr:hover {
+            background-color: #abb8ff !important;
+        }
+    }
+}
+
+/* Datepicker */
+.datepicker-date-display, .is-selected {
+    background-color: #1a237e !important;
+
+}
+
+.confirmation-btns button {
+    color: #1a237e !important;
+}
+
+
+/* Inputs (All) */
+.input-field {
+    input[type=text]:focus + label, input[type=number]:focus + label {
+        color: #1a237e !important;
+    }
+
+    input[type=text]:focus, input[type=number]:focus {
+        border-bottom: 1px solid #1a237e !important;
+        box-shadow: 0 1px 0 0 #1a237e !important;
+    }
+}

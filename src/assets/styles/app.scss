@@ -1,21 +1,13 @@
+@import './materialize.scss';
+
+
+/* Background Color*/
 body {
     background-color: #e5e6ea;
 }
 
-.collapsible-body {
-    background-color: #fff;
-}
 
-.brand-logo {
-    margin: 10px 5px;
-    @media screen and (max-width: 992px) {
-        margin: 10px 0;
-    }
-    @media screen and (max-width: 600px) {
-        margin: 5px 0;
-    }
-}
-
+/* Add Nova Acao */
 .new-btn {
     transition: 0.25s ease;
 
@@ -24,6 +16,7 @@ body {
     }
 }
 
+/* CardAcao */
 .card.col.m4 {
     @media screen and (min-width: 601px) {
         width: calc(33.3333333333% - 5px);
@@ -40,14 +33,8 @@ body {
     }
 }
 
-table.highlight {
-    > tbody {
-        > tr:hover {
-            background-color: #abb8ff !important;
-        }
-    }
-}
 
+/* Graficos Home */
 .container-graficos {
     display: grid;
     grid-template-columns: 50% 50%;

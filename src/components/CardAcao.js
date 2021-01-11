@@ -21,7 +21,7 @@ class CardAcao extends Component {
         this._dadosAcao = {};
     }
 
-    compraAcao(qtd, preco, taxa, idAcao) {
+    compraAcao(data, qtd, preco, taxa, idAcao) {
         const newQM = this._QM + qtd;
         const newPM = ((this._PM * this._QM) + (preco * qtd) + taxa) / newQM;
 
@@ -52,7 +52,7 @@ class CardAcao extends Component {
 
         this.props.database.historico.push({
             id_acao: idAcao,
-            data: new Date().toLocaleString().split(' ')[0],
+            data: data,
             tipo: 'compra',
             cod: this.props.database.acoes.filter(acao => acao.id_acao == idAcao)[0].cod,
             preco: preco,
@@ -67,7 +67,7 @@ class CardAcao extends Component {
         window.location.reload();
     }
 
-    vendaAcao(qtd, preco, taxa, idAcao) {
+    vendaAcao(data, qtd, preco, taxa, idAcao) {
         this._RA = ((preco - this._PM) * qtd) - taxa;
         this._QM -= qtd;
         this.props.database.carteira[this.props.idx].qtd_media = this._QM;
@@ -84,7 +84,7 @@ class CardAcao extends Component {
 
         this.props.database.historico.push({
             id_acao: idAcao,
-            data: new Date().toLocaleString().split(' ')[0],
+            data: data,
             tipo: 'venda',
             cod: this.props.database.acoes.filter(acao => acao.id_acao == idAcao)[0].cod,
             preco: preco,
@@ -95,6 +95,9 @@ class CardAcao extends Component {
             resultado_auferido: this._RA,
             imposto: this._IR
         });
+        if(this._QM === 0) {
+            this.props.database.carteira.splice(this.props.idx, 1);
+        }
 
         localStorage.setItem(dbKey, JSON.stringify(this.props.database));
         window.location.reload();

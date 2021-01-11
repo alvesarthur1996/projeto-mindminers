@@ -13,10 +13,8 @@ class Grafico extends Component {
     }
 
     filteredData() {
-        const {historico, carteira, acoes} = this.props.database;
+        const {carteira, acoes} = this.props.database;
         let data = {labels: [], values: []};
-        //Labels
-        //Dados
 
         if (this.props.carteira) {
             carteira.forEach(item => {
@@ -84,12 +82,8 @@ class Grafico extends Component {
                 ],
             };
 
-            var options = {
-                animation: true,
-                generateLabels:
-                    function (label) {
-                        return '$' + label.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                    },
+            let options = {
+                animation: false,
                 maintainAspectRatio: true
             };
 

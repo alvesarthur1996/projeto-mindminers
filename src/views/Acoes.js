@@ -43,6 +43,11 @@ class Acoes extends Component {
     novaAcao(nome, cod){
         let {acoes} = this.props.database;
 
+        if(acoes.filter(item => item.cod == cod).length) {
+            alert("Essa ação já está listada!");
+            return false;
+        }
+
         acoes.push({
             id_acao: String((acoes.length + 1)),
             nome: nome,
@@ -65,7 +70,7 @@ class Acoes extends Component {
                 <h3>Ações</h3>
                 {
                     acoes.map((element, index) => {
-                        const naCarteira = carteira.filter(item => item.id_acao == element.id_acao);
+                        const naCarteira = carteira.filter(item => item.id_acao === element.id_acao);
 
                         return (
                             <CardAcao
@@ -81,7 +86,7 @@ class Acoes extends Component {
                         )
                     })
                 }
-                <a href="#" className="new-btn" onClick={this._openModal.bind(this)}>
+                <a className="new-btn" onClick={this._openModal.bind(this)}>
                     <Card
                         className="col m4 s12 indigo darken-4 add-new center"
                         textClassName="white-text"
@@ -113,7 +118,7 @@ class Acoes extends Component {
                                     maxLength="6"
                                     required
                                 />
-                                <Button className="indigo darken-4" waves="green"> Executar Ordem </Button>
+                                <Button className="indigo darken-4" waves="green"> Adicionar Ação </Button>
                             </form>
                         </Modal>
                         : null

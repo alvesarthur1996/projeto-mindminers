@@ -6,10 +6,11 @@ class RelatorioVendas extends Component {
 
     render() {
 
+        const {historico} = this.props.database;
         return (
             <div>
                 {
-                    this.props.database.historico.filter(item => item.tipo == "venda").length > 0 ?
+                    historico.filter(item => item.tipo == "venda").length > 0 ?
 
                         <Table responsive hoverable centered>
                             <thead>
@@ -27,7 +28,7 @@ class RelatorioVendas extends Component {
                             <tbody>
 
                             {
-                                this.props.database.historico.filter(item => item.tipo == "venda").map((el, index) => {
+                                historico.filter(item => item.tipo == "venda").map((el, index) => {
                                     return (
                                         <tr key={index}
                                             className={el.prejuizo_acumulado > 0 ? 'red lighten-4' : 'green lighten-4'}>

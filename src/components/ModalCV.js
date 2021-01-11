@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import {Modal, Button, TextInput} from "react-materialize";
+import CurrencyInput from 'react-currency-format';
+import {Modal, Button, TextInput, DatePicker} from "react-materialize";
 
 class ModalCV extends Component {
 
@@ -7,22 +8,36 @@ class ModalCV extends Component {
         super(props);
 
         this.tipo = this.props.CV;
-        this.moneyRegex = /^\d{1,3}(?:\.\d{3})*,\d{2}$/;
     }
 
     handleSubmit(event) {
         event.preventDefault();
+        const data = event.target.querySelector('#data-operacao').value;
         const qtd = parseInt(event.target.querySelector('#qtd').value);
-        const preco = parseFloat(event.target.querySelector('#preco').value);
-        const taxa = parseFloat(event.target.querySelector('#taxa').value);
+        const preco = parseFloat(event.target.querySelector('#preco').value
+            .replace("R$ ", "")
+            .replace(/\./g, "")
+            .replace(",", "."));
+        const taxa = parseFloat(event.target.querySelector('#taxa').value
+            .replace("R$ ", "")
+            .replace(/\./g, "")
+            .replace(",", "."));
 
         if (this.tipo == "compra") {
-            this.props.compra(qtd, preco, taxa, this.props.dadosAcao.id_acao);
+            this.props.compra(data, qtd, preco, taxa, this.props.dadosAcao.id_acao);
         } else {
-            this.props.venda(qtd, preco, taxa, this.props.dadosAcao.id_acao);
+            this.props.venda(data, qtd, preco, taxa, this.props.dadosAcao.id_acao);
         }
     }
 
+    handleQtdInput(e){
+        if(e.target.getAttribute('max') !== "Infinity" && parseInt(e.target.value) > parseInt(e.target.getAttribute('max'))){
+           e.target.value = e.target.getAttribute('max');
+        }
+        if(parseInt(e.target.value) < 1){
+            e.target.value = 1;
+        }
+    }
 
     render() {
         return (
@@ -40,7 +55,7 @@ class ModalCV extends Component {
                     dismissible: true,
                     endingTop: '10%',
                     inDuration: 250,
-                    onCloseEnd: null,
+                    onCloseEnd: this.props.closeUpdate,
                     onCloseStart: null,
                     onOpenEnd: null,
                     onOpenStart: null,
@@ -55,31 +70,124 @@ class ModalCV extends Component {
 
                 <br/>
                 <form onSubmit={this.handleSubmit.bind(this)}>
+                    <DatePicker
+                        label="Data"
+                        id="data-operacao"
+                        options={{
+                            autoClose: false,
+                            format: 'dd/mm/yyyy',
+                            i18n: {
+                                cancel: 'Cancelar',
+                                clear: 'Limpar',
+                                done: 'Ok',
+                                months: [
+                                    'Janeiro',
+                                    'Fevereiro',
+                                    'Março',
+                                    'Abril',
+                                    'Maio',
+                                    'Junho',
+                                    'Julho',
+                                    'Agosto',
+                                    'Setembro',
+                                    'Outubro',
+                                    'Novembro',
+                                    'Dezembro'
+                                ],
+                                monthsShort: [
+                                    'Jan',
+                                    'Fev',
+                                    'Mar',
+                                    'Abr',
+                                    'Mai',
+                                    'Jun',
+                                    'Jul',
+                                    'Ago',
+                                    'Set',
+                                    'Out',
+                                    'Nov',
+                                    'Dez'
+                                ],
+                                nextMonth: '›',
+                                previousMonth: '‹',
+                                weekdays: [
+                                    'Domingo',
+                                    'Segunda',
+                                    'Terça',
+                                    'Quarta',
+                                    'Quinta',
+                                    'Sexta',
+                                    'Sábado'
+                                ],
+                                weekdaysAbbrev: [
+                                    'D',
+                                    'S',
+                                    'T',
+                                    'Q',
+                                    'Q',
+                                    'S',
+                                    'S'
+                                ],
+                                weekdaysShort: [
+                                    'Dom',
+                                    'Seg',
+                                    'Ter',
+                                    'Qua',
+                                    'Qui',
+                                    'Sex',
+                                    'Sab'
+                                ]
+                            },
+                            isRTL: false,
+                            maxDate: null,
+                            minDate: null,
+                            onClose: null,
+                            onDraw: null,
+                            onOpen: null,
+                            onSelect: null,
+                            parse: null,
+                            setDefaultDate: false,
+                            showClearBtn: false,
+                            showDaysInNextAndPreviousMonths: false,
+                            showMonthAfterYear: false,
+                            yearRange: 3
+                        }}
+                        required
+                    />
                     <TextInput
                         id="qtd"
                         label="Quantidade"
+                        onInput={this.handleQtdInput}
                         type="number"
                         min="1"
                         step="1"
                         max={this.tipo == 'venda' ? this.props.vendaMax : Number.POSITIVE_INFINITY}
                         required
                     />
-                    <TextInput
-                        id="preco"
+                    <CurrencyInput
+                        thousandSeparator="."
+                        thousandSpacing="3"
+                        decimalSeparator=","
+                        allowNegative={false}
+                        prefix="R$ "
+                        customInput={TextInput}
                         label="Preço"
-                        type="number"
-                        min="0.01"
-                        step="0.01"
-                        validations={{matchRegexp: this.moneyRegex}}
+                        id="preco"
+                        fixedDecimalScale
+                        decimalScale={2}
                         required
                     />
-                    <TextInput
-                        id="taxa"
+                    <CurrencyInput
+                        thousandSeparator="."
+                        thousandSpacing="3"
+                        decimalSeparator=","
+                        allowNegative={false}
+                        prefix="R$ "
+                        customInput={TextInput}
                         label="Taxa de Corretagem"
-                        type="number"
-                        min="0.00"
-                        step="0.01"
-                        validations={{matchRegexp: this.moneyRegex}}
+                        id="taxa"
+                        fixedDecimalScale
+                        decimalScale={2}
                         required
                     />
                     <Button className="indigo darken-4" waves="green"> Executar Ordem </Button>

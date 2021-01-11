@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import CardAcao from "../components/CardAcao";
-import {Icon} from "react-materialize";
 
 class Carteira extends Component {
 
@@ -14,14 +13,15 @@ class Carteira extends Component {
     }
 
     render() {
+        const {carteira} = this.props.database;
         return (
             <div className='row'>
                 <h3> Carteira </h3>
                 {
-                    this.props.database.carteira.length < 1 ? <div><h4>Parece que você ainda não possui ações. <br/>Visite a página de ações no menu de navegação. </h4></div> : null
+                    carteira.length < 1 ? <div><h4>Parece que você ainda não possui ações. <br/>Visite a página de ações no menu de navegação. </h4></div> : null
                 }
                 {
-                    this.props.database.carteira.map((element, index) => {
+                    carteira.map((element, index) => {
                         return (
                             <CardAcao
                                 key={index}
